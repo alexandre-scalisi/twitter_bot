@@ -1,17 +1,75 @@
 require 'twitter'
 require 'dotenv'
+require 'pry'
+require 'rubocop'
 
 Dotenv.load('.env')
-puts ENV['Access_Token']
 
 def login_twitter
-client = Twitter::REST::Client.new do |config|
-  config.consumer_key        = ENV["Twitter_API_key"]
-  config.consumer_secret     = ENV["Twitter_API_Secret_key"]
-  config.access_token        = ENV["Access_Token"]
-  config.access_token_secret = ENV["Access_Token_Secret"]
-  
-end
-return client
+  client = Twitter::REST::Client.new do |config|
+    config.consumer_key        = ENV['Twitter_API_key']
+    config.consumer_secret     = ENV['Twitter_API_Secret_key']
+    config.access_token        = ENV['Access_Token']
+    config.access_token_secret = ENV['Access_Token_Secret']
+  end
+  client
 end
 
+def tweet_to_five_journalists
+  client = login_twitter
+  journalists = ['@jcunniet', '@Aziliz31', '@ssoumier', '@marionsouzeau', '@gaellombart', '@bendarag', '@AurelieLebelle', '@julienduffe', '@thomaspoupeau', '@LilyRossignol', '@ClairGuedon', '@stephanieauguy', '@claw_prolongeau', '@_JulieMenard', '@LColcomb', '@Zlauwereys', '@MeLonguet', '@DorotheeLN', '@NolwennCosson', '@ADaboval', '@Remibaldy', '@bderveaux', '@amandechap', '@ELODIESOULIE', '@nbongarcon', '@HeloAb', '@gregplou', '@BenoitBerthe', '@LauraBruneau89', '@Anthony_Lieures', '@Sharonwaj', '@mcsonkin', '@pverduzier', '@emiliel3', '@Julien_MARION', '@SophiFay', '@bdelombre', '@annalecerf', '@AdriaBudry', '@DejNikolic', '@iJaffre', '@CyrusleVirus', '@GPardigon', '@e_vallerey', '@IsabelleSouquet', '@AudeDavidRossi', '@Yoann_Pa', '@CeliaPenavaire', '@perraultvincent', '@cboulate', '@JustineWeyl', '@Paulinejacot', '@juliechab', '@aslechevallier', '@phnou', '@Seb_Pommier', '@Alex_Bensaid', '@GuillaumeGaven', '@annelaurechouin', '@Oliviader', '@guerricp', '@JMMarchaut', '@cyceron', '@gregory_raymond', '@vhunsinger', '@l_peillon', '@fannyguinochet', '@EAssayag', '@YvonHerry', '@JohanGarciajg', '@saidlabidi', '@lauranneprov', '@LeaDavy', '@francois_remy', '@CGuicheteau', '@FloMaillet', '@m_perroud', '@oBrunet_TSMF', '@MoonVdc', '@jc2taille', '@NellyMoussu', '@VirginK', '@b_misa', '@FabriceCouste', '@barbara_prose', '@lelia2m', '@brunoaskenazi', '@laurenechamp', '@ysisbox', '@juliengagliardi', '@PierreLel', '@kdeniau', '@_TerraInc', '@DominicArpin', '@antoinfonteneau', '@nanotousch', '@jb_roch', '@YaniKhezzar', '@Anne_Bechet', '@NCapart', '@SamyBenNaceur', '@Joumany', '@Julietteraynal', '@TGiraudet', '@SaraTanit', '@HappeFrederic', '@antoinellorca', '@michelpicot', '@Sev_Ryne', '@bobdobolino', '@murdever', '@YGrandmontagne', '@Mnyo', '@EdKOSCIANSKI', '@tnoisette', '@jankari', '@delbello_rom', '@rflechaux', '@NadiaSorelli', '@IT_Digital', '@abarbaux', '@PhilippeLeroy', '@schaptal', '@marionspee', '@lisavignoli', '@ChloeAeberhardt', '@MartineJacot', '@JuliaPascualita', '@curieusedetout', '@sgraveleau', '@bif_o', '@zinebdryef', '@apiquard', '@pierrehaski', '@StephanieDelmas', '@Blandine_Garot', '@vergara_i', '@evan_lebastard', '@SophieVclt', '@OlivierLevrault', '@alicedorgeval', '@LouiseMalnoy', '@alix_fx', '@pierre_baudis', '@LucMagoutier', '@AgatheMuller', '@SGianninelli', '@PaulineBoyer33', '@NaomiHalll', '@romaindlx', '@marionbr', '@Burtschy', '@JacobEtienne', '@as_lizzani', '@marie_simon', '@LaureDaussy', '@FabriceAmedeo', '@LoubnaChlaikhy', '@PlummerWilliam', '@OlivierMarin1', '@alaurefremont', '@mwesfreid', '@ChBaDe', '@pmathon', '@theobaldmarie', '@Lnpagesy', '@marclandre', '@paoliniesther', '@Feertchak', '@JBLitzler', '@GuillaumeErrard', '@quentinperinel', '@TristanQM', '@mlbo', '@constancejamet', '@LoraTerrazas', '@emiliegeffray', '@Mathilde_Sd', '@CaroPiquet', '@DCanivez', '@TIM_7375', '@blandinelc', '@ivanrioufol', '@arthurberdah', '@SarahLecoeuvre', '@guillaume_gui', '@DamienMercereau', '@W_Chloe', '@Assma_MD', '@EugenieBastie', '@HiTech_lexpress', '@bcondominas', '@Laurie_Z_', '@jeanfrancgerard', '@MathieuPagura', '@BGUYF', '@AlainPiffaretti', '@AudreyKucinskas', '@julienhory', '@Pierrefalga', '@TiphThuillier', '@cdaniez', '@LigerBaptiste', '@D_Peras', '@julie_dlb', '@julian2lamancha', '@GaetaneDeljurie', '@JulianMattei', '@M_Vicuna', '@DeBruynOlivier', '@Nehed_Jendoubi', '@antoine_grenapi', '@ColonnaGen', '@VictoriaGairin', '@Clement_Lacombe', '@TVigoureux', '@MargauxObriot', '@solinedelos', '@RocheSabine', '@dangerkens', '@EdouardDutour', '@MDondeyne', '@DupuisNathalie1', '@bouscarel', '@Mathieu2jean', '@Sophie_T_J', '@laurentcalixte', '@patrockwilliams', '@PascaleKremer', '@AlexJaquin', '@LauraIsaaz', '@cath_robin', '@Del_Gautherin', '@Isaduriez', '@lucietuile', '@AugeyBastien', '@mcastagnet', '@AminaKalache', '@mvaudano', '@CParrot', '@ombelinetips', '@_JoinLion', '@BarbolosiRose', '@ToiBruno1', '@FloraClodic', '@xjbdx', '@AlexiaEy', '@Emjy_STARK', '@elcoco01', '@rabilebon', '@pflovens_', '@FabriceFrossard', '@MorganeSERRES', '@MarjolaineKoch', '@edgarsnow', '@SRNLF', '@CChassigneux', '@NassiraELM', '@NewsRicard', '@Sandreene', '@Emilezrt', '@Pierre_Do', '@Micode', '@CColumelli', '@DavidAbiker', '@ClementBergantz', '@benjaminrabier', '@celinekallmann', '@edwyplenel', '@C_Barbier', '@JJBourdin_RMC', '@LaurenceFerrari', '@aslapix', '@IsaMillet', '@MaximeSwitek', '@tomjoubert', '@jszanchi', '@roqueeva', '@XavierBiseul', '@florencesantrot', '@AntoineCrochet', '@freeman59', '@MaudeML', '@philippe_gulpi', '@mathieum76', '@kiouari', '@imanemoustakir', '@BenedicteMallet', '@Emilie_Brouze', '@antoinebarret', '@_nicolasbocquet', '@remibuhagiar', '@CourretB', '@AymericRobert', '@miraelmartins', '@pmaniere', '@jesuisraphk', '@David_Ingram', '@pcelerier', '@technomedia', '@Geraldinedauver', '@ThierryLabro', '@Newsdusud', '@nrauline', '@gbregeras', '@SCouasnonBFM', '@actualites_nrv', '@dimitrimoulins', '@oli_aura', '@FabieChiche', '@Vincent_Raimblt', '@ChristophGreuet', '@PAlbuchay', '@MarrauddesGrot', '@vtalmon', '@cedric', '@olivierfrigara', '@Julien_Jay', '@LydiaBerroyer', '@Shuua', '@datisdaz', '@Steuph', '@ameliecharnay', '@Bruno_LesNums', '@LelloucheNico', '@CciliaDiQuinzio', '@Elodie_C', '@SylvRolland', '@Kocobe', '@FL_Debes', '@jdupontcalbo', '@GarciaVictor_', '@NicoRichaud', '@RHoueix', '@simottel', '@DamienLicata', '@annabelle_L', '@Lea_Lejeune', '@axel_deb', '@marin_eben', '@ptiberry', '@MatthieuDelach', '@sandrinecassini', '@benjaminferran', '@ppgarcia75', '@NotPatrick', '@ivalerio', '@FabienneSchmitt', '@alexgoude', '@JeromeColombain', '@manhack', '@Capucine_Cousin', '@Fsorel', '@oliviertesquet', '@marjoriepaillon', '@ginades', '@PierreTran', '@DelphineCuny', '@reesmarc', '@lauratenoudji', '@ldupin', '@carolinedescham', '@Lucile_Quillet', '@cgabizon', '@Allocab', '@epenser', '@JAGventeprivee', '@frwrds', '@Laure__Bourdon', '@Xavier75', '@maximeverner', '@s_jourdain']
+
+  done = ['done']
+  random = 'done'
+  5.times do
+    while done.include?(random)
+      random = rand(journalists.length) + 1
+      journalist = journalists[random]
+      done << journalist
+    end
+    client.search(journalist[1, journalists.length - 1]).take(1).each do |tweet|
+      id = tweet.id
+      client.update("#{journalist} 🙂 #bonjour_monde @the_hacking_pro", in_reply_to_status_id: id.to_s)
+      random = 'done'
+    end
+  end
+end
+
+def fav_bonjour_monde
+  client = login_twitter
+  client.search('#bonjour_monde').take(25).each do |tweet|
+    client.favorite(tweet)
+  end
+end
+
+def follow_bonjour_monde
+  client = login_twitter
+  client.search('#bonjour_monde').take(3).each do |tweet|
+    client.follow(tweet.user.screen_name)
+  end
+end
+
+def twitter_streaming_login
+    return Twitter::Streaming::Client.new do |config|
+    config.consumer_key = ENV['Twitter_API_key']
+    config.consumer_secret     = ENV['Twitter_API_Secret_key']
+    config.access_token        = ENV['Access_Token']
+    config.access_token_secret = ENV['Access_Token_Secret']
+  end
+end
+
+def follow_streaming
+  client = twitter_streaming_login
+  client2 = login_twitter
+  hashtag = 'bonjour_monde'
+  client.filter(track: hashtag.to_s) do |object|
+    if object.is_a?(Twitter::Entities)
+      object.hashtags.each do |h|
+        if h.text.to_s.downcase == hashtag.to_s
+          client2.follow(object.user.screen_name)
+          puts "follow #{object.user.screen_name}"
+        end
+      end
+    end
+  end
+end
